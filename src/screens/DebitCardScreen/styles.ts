@@ -124,12 +124,14 @@ export const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 5,
         elevation: 5,
-        overflow: 'visible',
         flex: 1,
+        overflow: 'visible',
     },
     sheetInnerContainer: {
         flex: 1,
-        backgroundColor: 'white'
+        backgroundColor: 'white',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
     },
     sheetContent: {
         paddingHorizontal: 16,

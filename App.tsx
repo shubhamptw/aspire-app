@@ -24,8 +24,8 @@ const BottomSheetWithCard = () => {
 
   // Snap points (in screen coordinates)
   const snapPoints = [
-    SCREEN_HEIGHT * 0.2, // 30% of screen
-    SCREEN_HEIGHT * 0.35, // 60% of screen
+    SCREEN_HEIGHT * 0.1,
+    SCREEN_HEIGHT * 0.38,
   ];
 
   const gesture = Gesture.Pan()
@@ -34,22 +34,26 @@ const BottomSheetWithCard = () => {
     })
     .onUpdate((event) => {
       const newPosition = dragContext.value.startY + event.translationY;
+      // Strictly enforce the snap points as boundaries
       sheetPosition.value = Math.max(
         snapPoints[0],
-        Math.min(newPosition, SCREEN_HEIGHT)
+        Math.min(newPosition, snapPoints[1])
       );
     })
     .onEnd((event) => {
+      // Find nearest snap point
       const nearestSnap = snapPoints.reduce((prev, curr) =>
         Math.abs(curr - sheetPosition.value) < Math.abs(prev - sheetPosition.value)
           ? curr
           : prev
       );
 
+      // Animate to nearest snap with spring physics
       sheetPosition.value = withSpring(nearestSnap, {
         velocity: -event.velocityY,
         stiffness: 500,
         damping: 30,
+        overshootClamping: true, // Prevent overshooting
       });
     });
 
@@ -58,7 +62,7 @@ const BottomSheetWithCard = () => {
   }));
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView >
       <SafeAreaView style={styles.container}>
         <Header />
 
