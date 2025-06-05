@@ -15,6 +15,7 @@ import { CardOptions } from './components/CardOptions';
 import { AddCardModal } from './components/AddCardModal';
 import { Card as CardType } from '../../types/card';
 import { getInitialCards, createNewCard } from '../../utils/cardUtils';
+import { useNavigation } from '@react-navigation/native';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -25,6 +26,7 @@ const DebitCardScreen = () => {
     const [cards, setCards] = useState<CardType[]>([]);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
     const [isAddCardModalVisible, setIsAddCardModalVisible] = useState(false);
+    const navigation = useNavigation();
 
     useEffect(() => {
         // Initialize with default cards
@@ -89,6 +91,10 @@ const DebitCardScreen = () => {
         });
     };
 
+    const handleWeeklyLimitPress = () => {
+        navigation.navigate('SpendingLimit');
+    };
+
     const currentCard = cards[currentCardIndex];
 
     return (
@@ -117,6 +123,7 @@ const DebitCardScreen = () => {
                                     cards={cards}
                                     currentCardIndex={currentCardIndex}
                                     onCardSelect={setCurrentCardIndex}
+                                    onWeeklyLimitPress={handleWeeklyLimitPress}
                                 />
                             </Animated.View>
                         </View>

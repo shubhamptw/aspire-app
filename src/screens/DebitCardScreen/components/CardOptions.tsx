@@ -10,6 +10,7 @@ interface CardOptionsProps {
     cards: CardType[];
     currentCardIndex: number;
     onCardSelect: (index: number) => void;
+    onWeeklyLimitPress: () => void;
 }
 
 export const CardOptions = ({
@@ -19,6 +20,7 @@ export const CardOptions = ({
     cards,
     currentCardIndex,
     onCardSelect,
+    onWeeklyLimitPress,
 }: CardOptionsProps) => {
     const options = [
         {
@@ -32,7 +34,7 @@ export const CardOptions = ({
             icon: require('../../../assets/transfer_2.png'),
             toggle: true,
             value: false,
-            onToggle: () => { },
+            onToggle: onWeeklyLimitPress,
         },
         {
             title: 'Freeze card',
