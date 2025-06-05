@@ -1,154 +1,143 @@
-import React, { useRef, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity } from 'react-native';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-// import Ionicons from 'react-native-vector-icons/Ionicons';
+import React, { useState, useEffect } from 'react';
+import { View, Dimensions, SafeAreaView, TouchableOpacity } from 'react-native';
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withSpring,
+} from 'react-native-reanimated';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { styles } from './styles';
+import { Header } from './components/Header';
+import { CardCarousel } from './components/CardCarousel';
+import { SpendingLimit } from './components/SpendingLimit';
+import { CardOptions } from './components/CardOptions';
+import { AddCardModal } from './components/AddCardModal';
+import { Card as CardType } from '../../types/card';
+import { getInitialCards, createNewCard } from '../../utils/cardUtils';
 
-export default function DebitCardScreen() {
-    const bottomSheetRef = useRef(null);
-    const snapPoints = useMemo(() => ['40%', '95%'], []);
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+const DebitCardScreen = () => {
+    const sheetPosition = useSharedValue(SCREEN_HEIGHT * 0.35);
+    const dragContext = useSharedValue({ startY: 0 });
     const [showCardNumber, setShowCardNumber] = useState(true);
-    const [weeklyLimit, setWeeklyLimit] = useState(true);
-    const [freezeCard, setFreezeCard] = useState(false);
+    const [cards, setCards] = useState<CardType[]>([]);
+    const [currentCardIndex, setCurrentCardIndex] = useState(0);
+    const [isAddCardModalVisible, setIsAddCardModalVisible] = useState(false);
+
+    useEffect(() => {
+        // Initialize with default cards
+        setCards(getInitialCards());
+    }, []);
+
+    // Snap points (in screen coordinates)
+    const snapPoints = [
+        SCREEN_HEIGHT * 0.1,
+        SCREEN_HEIGHT * 0.36,
+    ];
+
+    const gesture = Gesture.Pan()
+        .onStart(() => {
+            dragContext.value = { startY: sheetPosition.value };
+        })
+        .onUpdate((event) => {
+            const newPosition = dragContext.value.startY + event.translationY;
+            // Strictly enforce the snap points as boundaries
+            sheetPosition.value = Math.max(
+                snapPoints[0],
+                Math.min(newPosition, snapPoints[1])
+            );
+        })
+        .onEnd((event) => {
+            // Find nearest snap point
+            const nearestSnap = snapPoints.reduce((prev, curr) =>
+                Math.abs(curr - sheetPosition.value) < Math.abs(prev - sheetPosition.value)
+                    ? curr
+                    : prev
+            );
+
+            // Animate to nearest snap with spring physics
+            sheetPosition.value = withSpring(nearestSnap, {
+                velocity: -event.velocityY,
+                stiffness: 500,
+                damping: 30,
+                overshootClamping: true, // Prevent overshooting
+            });
+        });
+
+    const sheetStyle = useAnimatedStyle(() => ({
+        transform: [{ translateY: sheetPosition.value }],
+    }));
+
+    const handleAddCard = (name: string) => {
+        const newCard = createNewCard(name);
+        setCards(prevCards => [...prevCards, newCard]);
+        // Switch to the newly added card
+        setCurrentCardIndex(cards.length);
+        setIsAddCardModalVisible(false);
+    };
+
+    const handleToggleFreeze = () => {
+        setCards(prevCards => {
+            const newCards = [...prevCards];
+            newCards[currentCardIndex] = {
+                ...newCards[currentCardIndex],
+                isFrozen: !newCards[currentCardIndex].isFrozen
+            };
+            return newCards;
+        });
+    };
+
+    const currentCard = cards[currentCardIndex];
 
     return (
-        <View style={styles.container}>
-            {/* Header */}
-            <Text style={styles.header}>Debit Card</Text>
-            <Text style={styles.subheader}>Available balance</Text>
-            <Text style={styles.balance}>S$ 3,000</Text>
+        <GestureHandlerRootView>
+            <SafeAreaView style={styles.container}>
+                <Header />
 
-            {/* Bottom Sheet */}
-            <BottomSheet
-                ref={bottomSheetRef}
-                index={0}
-                snapPoints={snapPoints}
-                backgroundStyle={{ borderRadius: 24, overflow: 'visible' }}
-            >
-                <BottomSheetView style={{ overflow: 'visible' }}>
-
-                    <View style={styles.cardContainer}>
-                        {/* Toggle Card Number */}
-                        <TouchableOpacity
-                            onPress={() => setShowCardNumber(!showCardNumber)}
-                            style={styles.toggleCardButton}
-                        >
-                            {/* <Ionicons name="eye-off-outline" size={16} color="#00C48C" /> */}
-                            <Text style={styles.toggleCardText}>
-                                {showCardNumber ? 'Hide' : 'Show'} card number
-                            </Text>
-                        </TouchableOpacity>
-
-                        <View style={styles.card}>
-                            <Text style={styles.cardName}>Mark Henry</Text>
-                            <Text style={styles.cardNumber}>
-                                {showCardNumber ? '5647  3411  2413  2020' : '••••  ••••  ••••  ••••'}
-                            </Text>
-                            <View style={styles.cardFooter}>
-                                <Text style={styles.cardDetails}>Thru: 12/20</Text>
-                                <Text style={styles.cardDetails}>CVV: {showCardNumber ? '456' : '•••'}</Text>
-                            </View>
-                            <Text style={styles.visa}>VISA</Text>
-                        </View>
-                    </View>
-
-
-                    <Text style={styles.spendingTitle}>Debit card spending limit</Text>
-                    <View style={styles.limitRow}>
-                        <Text style={styles.spent}>$345</Text>
-                        <Text style={styles.limit}> / $5,000</Text>
-                    </View>
-                    <View style={styles.progressBar}>
-                        <View style={[styles.progressFill, { width: '7%' }]} />
-                    </View>
-
-                    {[
-                        {
-                            title: 'Top-up account',
-                            subtitle: 'Deposit money to your account to use with card',
-                            icon: 'arrow-up-circle-outline',
-                        },
-                        {
-                            title: 'Weekly spending limit',
-                            subtitle: 'Your weekly spending limit is S$ 5,000',
-                            icon: 'speedometer-outline',
-                            toggle: true,
-                            value: weeklyLimit,
-                            onToggle: setWeeklyLimit,
-                        },
-                        {
-                            title: 'Freeze card',
-                            subtitle: 'Your debit card is currently active',
-                            icon: 'snow-outline',
-                            toggle: true,
-                            value: freezeCard,
-                            onToggle: setFreezeCard,
-                        },
-                        {
-                            title: 'Get a new card',
-                            subtitle: 'This deactivates your current debit card',
-                            icon: 'card-outline',
-                        },
-                    ].map((item, index) => (
-                        <View key={index} style={styles.optionRow}>
-                            {/* <Ionicons name={item.icon} size={24} color="#3366FF" /> */}
-                            <View style={styles.optionText}>
-                                <Text style={styles.optionTitle}>{item.title}</Text>
-                                <Text style={styles.optionSubtitle}>{item.subtitle}</Text>
-                            </View>
-                            {item.toggle && (
-                                <Switch
-                                    value={item.value}
-                                    onValueChange={item.onToggle}
+                <Animated.View style={[styles.bottomSheet, sheetStyle]}>
+                    <GestureDetector gesture={gesture}>
+                        <View style={styles.sheetInnerContainer}>
+                            <Animated.View style={[styles.card]}>
+                                <CardCarousel
+                                    cards={cards}
+                                    currentCardIndex={currentCardIndex}
+                                    onCardChange={setCurrentCardIndex}
+                                    showCardNumber={showCardNumber}
+                                    onToggleCardNumber={() => setShowCardNumber(!showCardNumber)}
                                 />
-                            )}
+                            </Animated.View>
+                            <Animated.View style={styles.sheetContent}>
+                                <SpendingLimit />
+                                <CardOptions
+                                    onToggleFreeze={handleToggleFreeze}
+                                    onAddCard={() => setIsAddCardModalVisible(true)}
+                                    isFrozen={currentCard?.isFrozen || false}
+                                    cards={cards}
+                                    currentCardIndex={currentCardIndex}
+                                    onCardSelect={setCurrentCardIndex}
+                                />
+                            </Animated.View>
                         </View>
-                    ))}
-                </BottomSheetView>
+                    </GestureDetector>
+                </Animated.View>
 
-            </BottomSheet>
-        </View>
+                <TouchableOpacity
+                    style={styles.fab}
+                    onPress={() => setIsAddCardModalVisible(true)}
+                >
+                    <MaterialIcons name="add" size={24} color="#FFFFFF" />
+                </TouchableOpacity>
+
+                <AddCardModal
+                    visible={isAddCardModalVisible}
+                    onClose={() => setIsAddCardModalVisible(false)}
+                    onAddCard={handleAddCard}
+                />
+            </SafeAreaView>
+        </GestureHandlerRootView>
     );
-}
+};
 
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#002B5B', paddingTop: 60, paddingHorizontal: 20 },
-    header: { color: '#fff', fontSize: 24, fontWeight: '700' },
-    subheader: { color: '#a0c4de', marginTop: 10 },
-    balance: { color: '#00C48C', fontSize: 28, fontWeight: 'bold', marginBottom: 20 },
-    cardContainer: { marginTop: -160, zIndex: 10 },
-    card: {
-        backgroundColor: '#00C48C',
-        borderRadius: 16,
-        padding: 20,
-        marginTop: 8,
-    },
-    cardName: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
-    cardNumber: { color: '#fff', fontSize: 20, marginVertical: 10, letterSpacing: 2 },
-    cardFooter: { flexDirection: 'row', justifyContent: 'space-between' },
-    cardDetails: { color: '#fff' },
-    visa: { color: '#fff', fontSize: 24, fontWeight: 'bold', textAlign: 'right', marginTop: 10 },
-    toggleCardButton: {
-        backgroundColor: '#fff',
-        alignSelf: 'flex-end',
-        padding: 6,
-        borderRadius: 20,
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    toggleCardText: { color: '#00C48C', marginLeft: 4 },
-    sheetContent: { padding: 20, overflow: 'visible' },
-    spendingTitle: { fontWeight: '600', fontSize: 16, marginBottom: 5 },
-    limitRow: { flexDirection: 'row', marginBottom: 10 },
-    spent: { color: '#00C48C', fontWeight: 'bold' },
-    limit: { color: '#888' },
-    progressBar: { height: 10, backgroundColor: '#eee', borderRadius: 5 },
-    progressFill: { height: 10, backgroundColor: '#00C48C' },
-    optionRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginVertical: 16,
-    },
-    optionText: { flex: 1, marginLeft: 12 },
-    optionTitle: { fontWeight: '600', fontSize: 16 },
-    optionSubtitle: { color: '#777', fontSize: 14, marginTop: 2 },
-});
+export default DebitCardScreen;

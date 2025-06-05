@@ -1,19 +1,24 @@
 import React from 'react';
-import { View } from 'react-native';
-import { CardOption } from './CardOption';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { styles } from '../styles';
+import { Card as CardType } from '../../../types/card';
 
 interface CardOptionsProps {
-    weeklyLimit: boolean;
-    freezeCard: boolean;
-    onWeeklyLimitChange: (value: boolean) => void;
-    onFreezeCardChange: (value: boolean) => void;
+    onToggleFreeze: () => void;
+    onAddCard: () => void;
+    isFrozen: boolean;
+    cards: CardType[];
+    currentCardIndex: number;
+    onCardSelect: (index: number) => void;
 }
 
 export const CardOptions = ({
-    weeklyLimit,
-    freezeCard,
-    onWeeklyLimitChange,
-    onFreezeCardChange,
+    onToggleFreeze,
+    onAddCard,
+    isFrozen,
+    cards,
+    currentCardIndex,
+    onCardSelect,
 }: CardOptionsProps) => {
     const options = [
         {
@@ -26,25 +31,26 @@ export const CardOptions = ({
             subtitle: 'Your weekly spending limit is S$ 5,000',
             icon: require('../../../assets/transfer_2.png'),
             toggle: true,
-            value: weeklyLimit,
-            onToggle: onWeeklyLimitChange,
+            value: false,
+            onToggle: () => { },
         },
         {
             title: 'Freeze card',
-            subtitle: 'Your debit card is currently active',
+            subtitle: isFrozen ? 'Your debit card is currently frozen' : 'Your debit card is currently active',
             icon: require('../../../assets/nature.png'),
             toggle: true,
-            value: freezeCard,
-            onToggle: onFreezeCardChange,
+            value: isFrozen,
+            onToggle: onToggleFreeze,
         },
         {
             title: 'Get a new card',
             subtitle: 'This deactivates your current debit card',
             icon: require('../../../assets/transfer_1.png'),
+            onPress: onAddCard,
         },
         {
             title: 'Deactivated Cards',
-            subtitle: 'This deactivates your current debit card',
+            subtitle: 'Your previously deactivated cards',
             icon: require('../../../assets/transfer_3.png'),
         },
     ];
@@ -52,15 +58,35 @@ export const CardOptions = ({
     return (
         <View>
             {options.map((option, index) => (
-                <CardOption
+                <TouchableOpacity
                     key={index}
-                    title={option.title}
-                    subtitle={option.subtitle}
-                    icon={option.icon}
-                    toggle={option.toggle}
-                    value={option.value}
-                    onToggle={option.onToggle}
-                />
+                    style={styles.optionRow}
+                    onPress={option.onPress}
+                >
+                    <View style={styles.optionIcon}>
+                        <Image source={option.icon} style={{ width: 32, height: 32 }} />
+                    </View>
+                    <View style={styles.optionText}>
+                        <Text style={styles.optionTitle}>{option.title}</Text>
+                        <Text style={styles.optionSubtitle}>{option.subtitle}</Text>
+                    </View>
+                    {option.toggle && (
+                        <TouchableOpacity
+                            style={[
+                                styles.toggleButton,
+                                option.value && styles.toggleButtonActive,
+                            ]}
+                            onPress={option.onToggle}
+                        >
+                            <View
+                                style={[
+                                    styles.toggleCircle,
+                                    option.value && styles.toggleCircleActive,
+                                ]}
+                            />
+                        </TouchableOpacity>
+                    )}
+                </TouchableOpacity>
             ))}
         </View>
     );

@@ -108,6 +108,34 @@ export const styles = StyleSheet.create({
         fontSize: 13,
         marginTop: 2
     },
+    toggleButton: {
+        width: 50,
+        height: 28,
+        borderRadius: 14,
+        backgroundColor: '#E5E5E5',
+        padding: 2,
+        justifyContent: 'center',
+    },
+    toggleButtonActive: {
+        backgroundColor: '#01D167',
+    },
+    toggleCircle: {
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        backgroundColor: '#FFFFFF',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 2,
+    },
+    toggleCircleActive: {
+        transform: [{ translateX: 22 }],
+    },
     cardFooter: {
         flexDirection: 'row',
         justifyContent: 'flex-start'
@@ -143,14 +171,16 @@ export const styles = StyleSheet.create({
         left: '0%',
         right: '0%',
         zIndex: 10,
-        marginHorizontal: 16,
         marginTop: -100,
     },
-    cardContainer: {},
+    cardContainer: {
+        marginBottom: 24,
+    },
     card2: {
         backgroundColor: '#01D167',
         borderRadius: 16,
         padding: 24,
+        width: '100%',
     },
     toggleCardButton: {
         backgroundColor: '#fff',
@@ -209,5 +239,97 @@ export const styles = StyleSheet.create({
     spendingHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between'
-    }
+    },
+    optionsContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        paddingHorizontal: 24,
+        marginTop: 24,
+    },
+    optionButton: {
+        width: '48%',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 8,
+        padding: 16,
+        marginBottom: 16,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    optionIconContainer: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: '#EDFFF5',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    optionButtonText: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#222222',
+    },
+    cardsList: {
+        marginBottom: 24,
+    },
+    cardItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 8,
+        padding: 16,
+        marginBottom: 12,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    selectedCardItem: {
+        borderWidth: 1,
+        borderColor: '#01D167',
+    },
+    cardItemContent: {
+        flex: 1,
+    },
+    cardItemName: {
+        fontSize: 16,
+        fontWeight: '500',
+        color: '#222222',
+        marginBottom: 4,
+    },
+    cardItemNumber: {
+        fontSize: 14,
+        color: '#888888',
+    },
+    fab: {
+        position: 'absolute',
+        right: 24,
+        bottom: 24,
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        backgroundColor: '#01D167',
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
 }); 

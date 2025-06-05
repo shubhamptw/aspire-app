@@ -2,13 +2,15 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { styles } from '../styles';
+import { Card as CardType } from '../../../types/card';
 
 interface CardProps {
     showCardNumber: boolean;
     onToggleCardNumber: () => void;
+    card: CardType;
 }
 
-export const Card = ({ showCardNumber, onToggleCardNumber }: CardProps) => {
+export const Card = ({ showCardNumber, onToggleCardNumber, card }: CardProps) => {
     return (
         <View style={styles.cardContainer}>
             <TouchableOpacity
@@ -26,19 +28,19 @@ export const Card = ({ showCardNumber, onToggleCardNumber }: CardProps) => {
                 </Text>
             </TouchableOpacity>
 
-            <View style={styles.card2}>
+            <View style={[styles.card2, card.isFrozen && { opacity: 0.5 }]}>
                 <Image
                     source={require('../../../assets/aspire_full_logo.png')}
                     style={styles.aspireLogo}
                     resizeMode="contain"
                 />
-                <Text style={styles.cardName}>Mark Henry</Text>
+                <Text style={styles.cardName}>{card.name}</Text>
                 <Text style={styles.cardNumber}>
-                    {showCardNumber ? '5647   3411   2413   2020' : '••••   ••••   ••••   ••••'}
+                    {showCardNumber ? card.cardNumber : '••••   ••••   ••••   ••••'}
                 </Text>
                 <View style={styles.cardFooter}>
-                    <Text style={styles.cardDetails}>Thru: 12/20</Text>
-                    <Text style={styles.cardDetails}>CVV: {showCardNumber ? '456' : '•••'}</Text>
+                    <Text style={styles.cardDetails}>Thru: {card.expiryDate}</Text>
+                    <Text style={styles.cardDetails}>CVV: {showCardNumber ? card.cvv : '•••'}</Text>
                 </View>
                 <Image
                     source={require('../../../assets/visa_logo.png')}
