@@ -28,7 +28,7 @@ export const Card = ({ showCardNumber, onToggleCardNumber, card }: CardProps) =>
                 </Text>
             </TouchableOpacity>
 
-            <View style={[styles.card2, card.isFrozen && { opacity: 0.5 }]}>
+            <View style={[styles.card2, card.isFrozen && { backgroundColor: 'gray' }]}>
                 <Image
                     source={require('../../../assets/aspire_full_logo.png')}
                     style={styles.aspireLogo}
