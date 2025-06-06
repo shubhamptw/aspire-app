@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Dimensions, SafeAreaView, TouchableOpacity, Text, TextInput, ScrollView } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
@@ -13,6 +13,7 @@ import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/nativ
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
 import { disableSpendingLimit, enableSpendingLimit } from '../../store/spendingLimitSlice';
+import { setCards } from '../../store/cardsSlice';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -21,7 +22,6 @@ const CAROUSEL_OVERLAP = 120; // How much the carousel overflows above the botto
 
 const DebitCardScreen = () => {
     const [showCardNumber, setShowCardNumber] = useState(true);
-    const [cards, setCards] = useState<CardType[]>([]);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
     const [isAddCardModalVisible, setIsAddCardModalVisible] = useState(false);
     const [isSetLimitModalVisible, setIsSetLimitModalVisible] = useState(false);
@@ -31,28 +31,24 @@ const DebitCardScreen = () => {
     const dispatch = useDispatch();
     const spent = 345; // Example spent value
 
-    useEffect(() => {
-        // Initialize with default cards
-        setCards(getInitialCards());
-    }, []);
+    // Get cards from Redux
+    const cards = useSelector((state: RootState) => state.cards.cards);
 
     const handleAddCard = (name: string) => {
         const newCard = createNewCard(name);
-        setCards(prevCards => [...prevCards, newCard]);
-        // Switch to the newly added card
-        setCurrentCardIndex(cards.length);
+        const newCards = [...cards, newCard];
+        dispatch(setCards(newCards));
+        setCurrentCardIndex(newCards.length - 1);
         setIsAddCardModalVisible(false);
     };
 
     const handleToggleFreeze = () => {
-        setCards(prevCards => {
-            const newCards = [...prevCards];
-            newCards[currentCardIndex] = {
-                ...newCards[currentCardIndex],
-                isFrozen: !newCards[currentCardIndex].isFrozen
-            };
-            return newCards;
-        });
+        const newCards = [...cards];
+        newCards[currentCardIndex] = {
+            ...newCards[currentCardIndex],
+            isFrozen: !newCards[currentCardIndex].isFrozen
+        };
+        dispatch(setCards(newCards));
     };
 
     const handleWeeklyLimitPress = () => {
@@ -62,46 +58,38 @@ const DebitCardScreen = () => {
     const handleWeeklyLimitToggle = (value: boolean) => {
         if (value) {
             navigation.navigate('SpendingLimit', {
-                cardId: currentCard.id,
+                cardId: cards[currentCardIndex].id,
                 onLimitSet: (limit: number) => {
-                    setCards(prevCards => {
-                        const idx = prevCards.findIndex(card => card.id === currentCard.id);
-                        if (idx === -1) return prevCards;
-                        const newCards = [...prevCards];
-                        newCards[idx] = {
-                            ...newCards[idx],
-                            weeklyLimitEnabled: true,
-                            weeklyLimit: limit,
-                        };
-                        return newCards;
-                    });
+                    const newCards = [...cards];
+                    newCards[currentCardIndex] = {
+                        ...newCards[currentCardIndex],
+                        weeklyLimitEnabled: true,
+                        weeklyLimit: limit,
+                    };
+                    dispatch(setCards(newCards));
                 }
             });
         } else {
-            setCards(prevCards => {
-                const newCards = [...prevCards];
-                newCards[currentCardIndex] = {
-                    ...newCards[currentCardIndex],
-                    weeklyLimitEnabled: false,
-                    weeklyLimit: null,
-                };
-                return newCards;
-            });
+            const newCards = [...cards];
+            newCards[currentCardIndex] = {
+                ...newCards[currentCardIndex],
+                weeklyLimitEnabled: false,
+                weeklyLimit: null,
+            };
+            dispatch(setCards(newCards));
         }
     };
 
     const handleSetLimit = () => {
         const limit = parseInt(pendingLimitValue, 10);
         if (!isNaN(limit) && limit > 0) {
-            setCards(prevCards => {
-                const newCards = [...prevCards];
-                newCards[currentCardIndex] = {
-                    ...newCards[currentCardIndex],
-                    weeklyLimitEnabled: true,
-                    weeklyLimit: limit,
-                };
-                return newCards;
-            });
+            const newCards = [...cards];
+            newCards[currentCardIndex] = {
+                ...newCards[currentCardIndex],
+                weeklyLimitEnabled: true,
+                weeklyLimit: limit,
+            };
+            dispatch(setCards(newCards));
             setIsSetLimitModalVisible(false);
             setPendingLimitValue('');
         }
