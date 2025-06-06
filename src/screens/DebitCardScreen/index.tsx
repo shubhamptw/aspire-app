@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Dimensions, SafeAreaView, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, SafeAreaView, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
 import { Header } from './components/Header';
@@ -24,7 +24,7 @@ const DebitCardScreen = () => {
     const dispatch = useDispatch();
     const spent = 345; // Example spent value
 
-    // Get cards from Redux
+    /* Getting card data from redux instead of an actual api call */
     const cards = useSelector((state: RootState) => state.cards.cards);
 
     const handleAddCard = (name: string) => {
