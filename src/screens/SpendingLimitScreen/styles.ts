@@ -1,6 +1,55 @@
 import { StyleSheet } from "react-native";
+import { font } from '../../utils/typography';
 
 export const styles = StyleSheet.create({
+    headerTitle: {
+        ...font.bold,
+        color: '#fff',
+        fontSize: 24,
+        textAlign: 'left',
+        marginTop: 16
+    },
+    cardLabel: {
+        ...font.medium,
+        fontSize: 16,
+        color: '#222',
+    },
+    currencyText: {
+        ...font.bold,
+        color: '#fff',
+        fontSize: 18,
+    },
+    amountInput: {
+        ...font.bold,
+        fontSize: 36,
+        color: '#222',
+        letterSpacing: 1,
+        flex: 1,
+        padding: 0,
+        margin: 0,
+        backgroundColor: 'transparent',
+        borderWidth: 0,
+    },
+    infoText: {
+        ...font.regular,
+        color: '#888',
+        fontSize: 13,
+        marginTop: 12,
+    },
+    presetBtnText: {
+        ...font.medium,
+        color: '#01D167',
+        fontSize: 16,
+    },
+    presetBtnTextSelected: {
+        ...font.bold,
+        color: '#01D167',
+    },
+    saveBtnText: {
+        ...font.bold,
+        color: '#fff',
+        fontSize: 18,
+    },
     root: {
         flex: 1,
         backgroundColor: '#003366',
@@ -19,13 +68,6 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    headerTitle: {
-        color: '#fff',
-        fontSize: 24,
-        fontWeight: '700',
-        textAlign: 'left',
-        marginTop: 16
-    },
     card: {
         backgroundColor: '#fff',
         marginHorizontal: 0,
@@ -41,11 +83,6 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 16,
     },
-    cardLabel: {
-        fontSize: 16,
-        color: '#222',
-        fontWeight: '500',
-    },
     amountRow: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -59,27 +96,6 @@ export const styles = StyleSheet.create({
         marginRight: 8,
         minWidth: 40,
         alignItems: 'center',
-    },
-    currencyText: {
-        color: '#fff',
-        fontWeight: '700',
-        fontSize: 18,
-    },
-    amountInput: {
-        fontSize: 36,
-        fontWeight: '700',
-        color: '#222',
-        letterSpacing: 1,
-        flex: 1,
-        padding: 0,
-        margin: 0,
-        backgroundColor: 'transparent',
-        borderWidth: 0,
-    },
-    infoText: {
-        color: '#888',
-        fontSize: 13,
-        marginTop: 12,
     },
     presetRowInCard: {
         flexDirection: 'row',
@@ -103,15 +119,6 @@ export const styles = StyleSheet.create({
         backgroundColor: '#E5FFF6',
         borderColor: '#01D167',
     },
-    presetBtnText: {
-        color: '#01D167',
-        fontWeight: '600',
-        fontSize: 16,
-    },
-    presetBtnTextSelected: {
-        color: '#01D167',
-        fontWeight: '700',
-    },
     saveArea: {
         backgroundColor: '#fff',
         paddingTop: 16,
@@ -126,11 +133,6 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 32,
         marginTop: 32,
-    },
-    saveBtnText: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: '700',
     },
     smallLogo: {
         alignSelf: 'flex-end',
