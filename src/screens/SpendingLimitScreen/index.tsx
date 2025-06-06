@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, TextInput, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, TextInput, SafeAreaView, Image } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch } from 'react-redux';
@@ -50,8 +50,11 @@ const SpendingLimitScreen = () => {
                         <MaterialIcons name="arrow-back-ios" size={24} color="#fff" />
                     </TouchableOpacity>
                     <View style={styles.headerIconBtn}>
-                        <MaterialIcons name="arrow-upward" size={28} color="#01D167" />
-                    </View>
+                        <Image
+                            source={require('../../assets/aspire_logo1.png')}
+                            style={styles.smallLogo}
+                            resizeMode="contain"
+                        />                    </View>
                 </View>
                 <Text style={styles.headerTitle}>Spending limit</Text>
             </View>
@@ -109,12 +112,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#003366',
     },
     headerBg: {
+        paddingHorizontal: 16,
     },
     headerRow: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 16,
     },
     headerIconBtn: {
         width: 32,
@@ -126,8 +129,8 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 24,
         fontWeight: '700',
-        textAlign: 'center',
-        flex: 1,
+        textAlign: 'left',
+        marginTop: 16
     },
     card: {
         backgroundColor: '#fff',
@@ -234,6 +237,11 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 18,
         fontWeight: '700',
+    },
+    smallLogo: {
+        alignSelf: 'flex-end',
+        width: 25,
+        height: 25
     },
 });
 
