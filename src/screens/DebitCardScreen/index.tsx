@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Dimensions, SafeAreaView, TouchableOpacity, Text, TextInput, ScrollView, Alert } from 'react-native';
+import { View, Dimensions, SafeAreaView, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
 import { Header } from './components/Header';
@@ -7,27 +7,20 @@ import { CardCarousel } from './components/CardCarousel';
 import { SpendingLimit } from './components/SpendingLimit';
 import { CardOptions } from './components/CardOptions';
 import { AddCardModal } from './components/AddCardModal';
-import { Card as CardType } from '../../types/card';
-import { getInitialCards, createNewCard } from '../../utils/cardUtils';
-import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
+import { createNewCard } from '../../utils/cardUtils';
+import { useNavigation, } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
-import { disableSpendingLimit, enableSpendingLimit } from '../../store/spendingLimitSlice';
 import { setCards } from '../../store/cardsSlice';
 
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const BOTTOM_SHEET_TOP = 180; // Distance from top where bottom sheet starts
 const CAROUSEL_OVERLAP = 120; // How much the carousel overflows above the bottom sheet
 
 const DebitCardScreen = () => {
     const [showCardNumber, setShowCardNumber] = useState(true);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
     const [isAddCardModalVisible, setIsAddCardModalVisible] = useState(false);
-    const [isSetLimitModalVisible, setIsSetLimitModalVisible] = useState(false);
-    const [pendingLimitValue, setPendingLimitValue] = useState('');
     const navigation = useNavigation();
-    const route = useRoute();
     const dispatch = useDispatch();
     const spent = 345; // Example spent value
 
@@ -49,10 +42,6 @@ const DebitCardScreen = () => {
             isFrozen: !newCards[currentCardIndex].isFrozen
         };
         dispatch(setCards(newCards));
-    };
-
-    const handleWeeklyLimitPress = () => {
-        navigation.navigate('SpendingLimit');
     };
 
     const handleWeeklyLimitToggle = (value: boolean) => {
@@ -77,21 +66,6 @@ const DebitCardScreen = () => {
                 weeklyLimit: null,
             };
             dispatch(setCards(newCards));
-        }
-    };
-
-    const handleSetLimit = () => {
-        const limit = parseInt(pendingLimitValue, 10);
-        if (!isNaN(limit) && limit > 0) {
-            const newCards = [...cards];
-            newCards[currentCardIndex] = {
-                ...newCards[currentCardIndex],
-                weeklyLimitEnabled: true,
-                weeklyLimit: limit,
-            };
-            dispatch(setCards(newCards));
-            setIsSetLimitModalVisible(false);
-            setPendingLimitValue('');
         }
     };
 
@@ -173,7 +147,7 @@ const DebitCardScreen = () => {
                 </View>
             </View>
             <TouchableOpacity
-                style={[styles.fab, { zIndex: 99, elevation: 10 }]}
+                style={[styles.fab]}
                 onPress={() => setIsAddCardModalVisible(true)}
             >
                 <MaterialIcons name="add" size={24} color="#FFFFFF" />

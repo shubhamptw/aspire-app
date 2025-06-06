@@ -1,24 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, TextInput, SafeAreaView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, SafeAreaView, Image } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { useDispatch } from 'react-redux';
-import { setSpendingLimit, disableSpendingLimit } from '../../store/spendingLimit/actions';
 import { styles } from './styles';
 
-const { width } = Dimensions.get('window');
 const LIMITS = [5000, 10000, 20000];
 
 const SpendingLimitScreen = () => {
     const navigation = useNavigation();
-    const dispatch = useDispatch();
     const route = useRoute();
-    const { cardId, onLimitSet } = route.params || {};
-    const [selectedLimit, setSelectedLimit] = useState(LIMITS[0]);
+    const { onLimitSet } = route.params || {};
     const [amount, setAmount] = useState(String(LIMITS[0]));
 
     const handleLimitSelect = (limit: number) => {
-        setSelectedLimit(limit);
         setAmount(String(limit));
     };
 
@@ -26,11 +20,9 @@ const SpendingLimitScreen = () => {
         // Only allow numbers
         const num = text.replace(/[^0-9]/g, '');
         setAmount(num);
-        if (num) setSelectedLimit(Number(num));
     };
 
     const handleBack = () => {
-        if (cardId) dispatch(disableSpendingLimit(cardId));
         navigation.goBack();
     };
 

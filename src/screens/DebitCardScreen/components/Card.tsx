@@ -30,7 +30,7 @@ export const Card = ({ showCardNumber, onToggleCardNumber, card, onLongPress }: 
             </TouchableOpacity>
             <TouchableOpacity
                 activeOpacity={1}
-                style={styles.card2}
+                style={[styles.card2, card.isFrozen && { backgroundColor: 'gray' }]}
                 onLongPress={onLongPress}
             >
                 <Image

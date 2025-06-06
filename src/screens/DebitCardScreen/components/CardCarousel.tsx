@@ -6,7 +6,6 @@ import { Card as CardType } from '../../../types/card';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH - 52;
 const CARD_SPACING = 16;
-const HORIZONTAL_PADDING = 26;
 
 interface CardCarouselProps {
     cards: CardType[];
