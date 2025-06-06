@@ -330,4 +330,28 @@ export const styles = StyleSheet.create({
         zIndex: 99,
         elevation: 10
     },
+    bottomSheetContainer: {
+        flex: 1,
+        backgroundColor: 'white',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -3 },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 2,
+        marginTop: -180,
+        overflow: 'visible',
+        zIndex: 1,
+    },
+
+
+    scrollViewContent: {
+        paddingHorizontal: 16,
+        paddingTop: 180, // CAROUSEL_OVERLAP
+    },
+    cardCarouselContainer: {
+        zIndex: 2,
+        elevation: 6,
+    },
 }); 

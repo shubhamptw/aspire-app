@@ -7,10 +7,6 @@ interface CardOptionsProps {
     onToggleFreeze: () => void;
     onAddCard: () => void;
     isFrozen: boolean;
-    cards: CardType[];
-    currentCardIndex: number;
-    onCardSelect: (index: number) => void;
-    onWeeklyLimitPress: () => void;
     weeklyLimitEnabled: boolean;
     onWeeklyLimitToggle: (value: boolean) => void;
 }
@@ -19,10 +15,6 @@ export const CardOptions = ({
     onToggleFreeze,
     onAddCard,
     isFrozen,
-    cards,
-    currentCardIndex,
-    onCardSelect,
-    onWeeklyLimitPress,
     weeklyLimitEnabled,
     onWeeklyLimitToggle,
 }: CardOptionsProps) => {
@@ -38,7 +30,6 @@ export const CardOptions = ({
             icon: require('../../../assets/transfer_2.png'),
             switch: true,
             value: weeklyLimitEnabled,
-            onPress: onWeeklyLimitPress,
             onToggle: onWeeklyLimitToggle,
         },
         {

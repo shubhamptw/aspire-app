@@ -13,7 +13,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
 import { setCards } from '../../store/cardsSlice';
 
-
 const CAROUSEL_OVERLAP = 120; // How much the carousel overflows above the bottom sheet
 
 const DebitCardScreen = () => {
@@ -103,7 +102,7 @@ const DebitCardScreen = () => {
         <SafeAreaView style={styles.container}>
             <Header />
             <View style={{ flex: 1 }}>
-                <View style={{ zIndex: 2, elevation: 6 }}>
+                <View style={styles.cardCarouselContainer}>
                     <CardCarousel
                         cards={cards}
                         currentCardIndex={currentCardIndex}
@@ -113,22 +112,11 @@ const DebitCardScreen = () => {
                         onLongPressCard={handleDeleteCard}
                     />
                 </View>
-                {/* Bottom sheet-like background with negative margin to allow carousel to overflow */}
-                <View style={{
-                    flex: 1,
-                    backgroundColor: 'white',
-                    borderTopLeftRadius: 20,
-                    borderTopRightRadius: 20,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: -3 },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 5,
-                    elevation: 2,
-                    marginTop: -CAROUSEL_OVERLAP,
-                    overflow: 'visible',
-                    zIndex: 1,
-                }}>
-                    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 16, paddingTop: CAROUSEL_OVERLAP }}>
+                <View style={styles.bottomSheetContainer}>
+                    <ScrollView
+                        style={{ flex: 1 }}
+                        contentContainerStyle={styles.scrollViewContent}
+                    >
                         {currentCard.weeklyLimitEnabled && currentCard.weeklyLimit && (
                             <SpendingLimit limit={currentCard.weeklyLimit} spent={spent} />
                         )}
@@ -136,10 +124,6 @@ const DebitCardScreen = () => {
                             onToggleFreeze={handleToggleFreeze}
                             onAddCard={() => setIsAddCardModalVisible(true)}
                             isFrozen={currentCard?.isFrozen || false}
-                            cards={cards}
-                            currentCardIndex={currentCardIndex}
-                            onCardSelect={setCurrentCardIndex}
-                            onWeeklyLimitPress={() => { }}
                             weeklyLimitEnabled={currentCard.weeklyLimitEnabled}
                             onWeeklyLimitToggle={handleWeeklyLimitToggle}
                         />
