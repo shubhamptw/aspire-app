@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Dimensions, SafeAreaView, TouchableOpacity, Text, TextInput, ScrollView } from 'react-native';
+import { View, Dimensions, SafeAreaView, TouchableOpacity, Text, TextInput, ScrollView, Alert } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
 import { Header } from './components/Header';
@@ -95,6 +95,31 @@ const DebitCardScreen = () => {
         }
     };
 
+    const handleDeleteCard = (index: number) => {
+        if (cards.length === 1) {
+            Alert.alert('Cannot delete', 'At least one card must remain.');
+            return;
+        }
+        Alert.alert(
+            'Delete Card',
+            'Are you sure you want to delete this card?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: () => {
+                        const newCards = cards.filter((_, i) => i !== index);
+                        dispatch(setCards(newCards));
+                        if (currentCardIndex >= newCards.length) {
+                            setCurrentCardIndex(newCards.length - 1);
+                        }
+                    },
+                },
+            ]
+        );
+    };
+
     const currentCard = cards[currentCardIndex];
     if (!currentCard) {
         return null;
@@ -111,6 +136,7 @@ const DebitCardScreen = () => {
                         onCardChange={setCurrentCardIndex}
                         showCardNumber={showCardNumber}
                         onToggleCardNumber={() => setShowCardNumber(!showCardNumber)}
+                        onLongPressCard={handleDeleteCard}
                     />
                 </View>
                 {/* Bottom sheet-like background with negative margin to allow carousel to overflow */}

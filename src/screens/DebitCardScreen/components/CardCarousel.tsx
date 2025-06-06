@@ -14,6 +14,7 @@ interface CardCarouselProps {
     onCardChange: (index: number) => void;
     showCardNumber: boolean;
     onToggleCardNumber: () => void;
+    onLongPressCard?: (index: number) => void;
 }
 
 export const CardCarousel = ({
@@ -22,6 +23,7 @@ export const CardCarousel = ({
     onCardChange,
     showCardNumber,
     onToggleCardNumber,
+    onLongPressCard,
 }: CardCarouselProps) => {
     // Add left and right spacers
     const spacerWidth = (SCREEN_WIDTH - CARD_WIDTH) / 2;
@@ -33,7 +35,7 @@ export const CardCarousel = ({
 
     const renderItem = ({ item, index }: { item: any; index: number }) => {
         if (item.type === 'spacer') {
-            return <View style={{ width: spacerWidth }} />;
+            return <View style={[styles.spacer, { width: spacerWidth }]} />;
         }
         return (
             <View style={styles.cardContainer}>
@@ -41,6 +43,7 @@ export const CardCarousel = ({
                     card={item}
                     showCardNumber={showCardNumber}
                     onToggleCardNumber={onToggleCardNumber}
+                    onLongPress={onLongPressCard ? () => onLongPressCard(index - 1) : undefined}
                 />
             </View>
         );
@@ -89,5 +92,8 @@ const styles = StyleSheet.create({
     cardContainer: {
         width: CARD_WIDTH,
         marginRight: CARD_SPACING,
+    },
+    spacer: {
+        // Add appropriate styles for spacer
     },
 }); 

@@ -8,27 +8,17 @@ interface CardProps {
     showCardNumber: boolean;
     onToggleCardNumber: () => void;
     card: CardType;
+    onLongPress?: () => void;
 }
 
-export const Card = ({ showCardNumber, onToggleCardNumber, card }: CardProps) => {
+export const Card = ({ showCardNumber, onToggleCardNumber, card, onLongPress }: CardProps) => {
     return (
         <View style={styles.cardContainer}>
             <TouchableOpacity
-                onPress={onToggleCardNumber}
-                style={styles.toggleCardButton}
+                activeOpacity={1}
+                style={styles.card2}
+                onLongPress={onLongPress}
             >
-                <MaterialIcons
-                    name={showCardNumber ? 'visibility-off' : 'visibility'}
-                    size={16}
-                    style={styles.visibilityIcon}
-                    color="#00C48C"
-                />
-                <Text style={styles.toggleCardText}>
-                    {showCardNumber ? 'Hide' : 'Show'} card number
-                </Text>
-            </TouchableOpacity>
-
-            <View style={[styles.card2, card.isFrozen && { backgroundColor: 'gray' }]}>
                 <Image
                     source={require('../../../assets/aspire_full_logo.png')}
                     style={styles.aspireLogo}
@@ -47,7 +37,21 @@ export const Card = ({ showCardNumber, onToggleCardNumber, card }: CardProps) =>
                     style={styles.visaLogo}
                     resizeMode="contain"
                 />
-            </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+                onPress={onToggleCardNumber}
+                style={styles.toggleCardButton}
+            >
+                <MaterialIcons
+                    name={showCardNumber ? 'visibility-off' : 'visibility'}
+                    size={20}
+                    color="#01D167"
+                    style={styles.visibilityIcon}
+                />
+                <Text style={styles.toggleCardText}>
+                    {showCardNumber ? 'Hide card number' : 'Show card number'}
+                </Text>
+            </TouchableOpacity>
         </View>
     );
 }; 
