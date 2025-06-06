@@ -78,21 +78,13 @@ export const CardOptions = ({
                         <Text style={styles.optionTitle}>{option.title}</Text>
                         <Text style={styles.optionSubtitle}>{option.subtitle}</Text>
                     </View>
-                    {option.switch && (
-                        <Switch
-                            value={option.value}
-                            onValueChange={option.onToggle}
-                            thumbColor={option.value ? '#fff' : '#fff'}
-                            trackColor={{ false: '#EEEEEE', true: '#01D167' }}
-                        />
-                    )}
-                    {option.toggle && !option.switch && (
+                    {(option.switch || option.toggle) && (
                         <TouchableOpacity
                             style={[
                                 styles.toggleButton,
                                 option.value && styles.toggleButtonActive,
                             ]}
-                            onPress={option.onToggle}
+                            onPress={() => option.onToggle?.(!option.value)}
                         >
                             <View
                                 style={[

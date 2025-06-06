@@ -1,21 +1,20 @@
 import { StyleSheet, Dimensions } from 'react-native';
 import { font } from '../../utils/typography';
 
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
-
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#002B5B',
-        paddingHorizontal: 26
+        // paddingHorizontal: 26
     },
     headerContainer: {
-        marginHorizontal: 16
+        margin: 16,
+
     },
     smallLogo: {
         alignSelf: 'flex-end',
         width: 25,
-        height: 25
+        height: 25,
     },
     header: {
         ...font.bold,
