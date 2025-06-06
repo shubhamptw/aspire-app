@@ -82,19 +82,16 @@ npm run android
 ### Managing Cards
 
 #### Adding a New Card
-![Add Card](docs/images/add-card.png)
 1. Tap the "+" button (FAB) in the bottom right corner
 2. Enter the cardholder's name in the modal
 3. Tap "Add Card" to create a new card
 
 #### Deleting a Card
-![Delete Card](docs/images/delete-card.png)
 1. Long press on the card you want to delete
 2. Confirm deletion in the alert dialog
    - Note: You cannot delete the last remaining card
 
 #### Viewing Card Details
-![Card Details](docs/images/card-details.png)
 - Card number is visible by default
 - Tap the "Show/Hide card number" button to toggle visibility
 - Card details include:
