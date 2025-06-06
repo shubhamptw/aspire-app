@@ -6,4 +6,6 @@ export interface Card {
     cvv: string;
     isFrozen: boolean;
     isActive: boolean;
+    weeklyLimitEnabled: boolean;
+    weeklyLimit: number | null;
 } 

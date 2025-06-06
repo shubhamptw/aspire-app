@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Dimensions, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Dimensions, SafeAreaView, TouchableOpacity, Text, TextInput } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
     useSharedValue,
@@ -15,7 +15,10 @@ import { CardOptions } from './components/CardOptions';
 import { AddCardModal } from './components/AddCardModal';
 import { Card as CardType } from '../../types/card';
 import { getInitialCards, createNewCard } from '../../utils/cardUtils';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../../store';
+import { disableSpendingLimit, enableSpendingLimit } from '../../store/spendingLimitSlice';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -26,7 +29,12 @@ const DebitCardScreen = () => {
     const [cards, setCards] = useState<CardType[]>([]);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
     const [isAddCardModalVisible, setIsAddCardModalVisible] = useState(false);
+    const [isSetLimitModalVisible, setIsSetLimitModalVisible] = useState(false);
+    const [pendingLimitValue, setPendingLimitValue] = useState('');
     const navigation = useNavigation();
+    const route = useRoute();
+    const dispatch = useDispatch();
+    const spent = 345; // Example spent value
 
     useEffect(() => {
         // Initialize with default cards
@@ -95,7 +103,64 @@ const DebitCardScreen = () => {
         navigation.navigate('SpendingLimit');
     };
 
+    const handleWeeklyLimitToggle = (value: boolean) => {
+        if (value) {
+            navigation.navigate('SpendingLimit', {
+                cardId: currentCard.id,
+                onLimitSet: (limit: number) => {
+                    setCards(prevCards => {
+                        const idx = prevCards.findIndex(card => card.id === currentCard.id);
+                        if (idx === -1) return prevCards;
+                        const newCards = [...prevCards];
+                        newCards[idx] = {
+                            ...newCards[idx],
+                            weeklyLimitEnabled: true,
+                            weeklyLimit: limit,
+                        };
+                        return newCards;
+                    });
+                }
+            });
+        } else {
+            setCards(prevCards => {
+                const newCards = [...prevCards];
+                newCards[currentCardIndex] = {
+                    ...newCards[currentCardIndex],
+                    weeklyLimitEnabled: false,
+                    weeklyLimit: null,
+                };
+                return newCards;
+            });
+        }
+    };
+
+    const handleSetLimit = () => {
+        const limit = parseInt(pendingLimitValue, 10);
+        if (!isNaN(limit) && limit > 0) {
+            setCards(prevCards => {
+                const newCards = [...prevCards];
+                newCards[currentCardIndex] = {
+                    ...newCards[currentCardIndex],
+                    weeklyLimitEnabled: true,
+                    weeklyLimit: limit,
+                };
+                return newCards;
+            });
+            setIsSetLimitModalVisible(false);
+            setPendingLimitValue('');
+        }
+    };
+
     const currentCard = cards[currentCardIndex];
+    // Always call useSelector before any return
+    const cardLimitState = useSelector((state: RootState) =>
+        currentCard ? state.spendingLimit.cardLimits[currentCard.id] || { limit: null, enabled: false } : { limit: null, enabled: false }
+    );
+    const spendingLimit = cardLimitState.limit;
+    const spendingLimitEnabled = cardLimitState.enabled;
+    if (!currentCard) {
+        return null;
+    }
 
     return (
         <GestureHandlerRootView>
@@ -115,7 +180,9 @@ const DebitCardScreen = () => {
                                 />
                             </Animated.View>
                             <Animated.View style={styles.sheetContent}>
-                                <SpendingLimit />
+                                {currentCard.weeklyLimitEnabled && currentCard.weeklyLimit && (
+                                    <SpendingLimit limit={currentCard.weeklyLimit} spent={spent} />
+                                )}
                                 <CardOptions
                                     onToggleFreeze={handleToggleFreeze}
                                     onAddCard={() => setIsAddCardModalVisible(true)}
@@ -123,7 +190,9 @@ const DebitCardScreen = () => {
                                     cards={cards}
                                     currentCardIndex={currentCardIndex}
                                     onCardSelect={setCurrentCardIndex}
-                                    onWeeklyLimitPress={handleWeeklyLimitPress}
+                                    onWeeklyLimitPress={() => { }}
+                                    weeklyLimitEnabled={currentCard.weeklyLimitEnabled}
+                                    onWeeklyLimitToggle={handleWeeklyLimitToggle}
                                 />
                             </Animated.View>
                         </View>
@@ -142,6 +211,9 @@ const DebitCardScreen = () => {
                     onClose={() => setIsAddCardModalVisible(false)}
                     onAddCard={handleAddCard}
                 />
+
+                {/* Set Limit Modal */}
+                {/* removed, now handled by SpendingLimitScreen */}
             </SafeAreaView>
         </GestureHandlerRootView>
     );

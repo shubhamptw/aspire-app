@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Dimensions } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, TextInput } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { useDispatch } from 'react-redux';
+import { setSpendingLimit, disableSpendingLimit } from '../../store/spendingLimit/actions';
 
 const { width } = Dimensions.get('window');
 const LIMITS = [5000, 10000, 20000];
 
 const SpendingLimitScreen = () => {
     const navigation = useNavigation();
+    const dispatch = useDispatch();
+    const route = useRoute();
+    const { cardId, onLimitSet } = route.params || {};
     const [selectedLimit, setSelectedLimit] = useState(LIMITS[0]);
     const [customLimit, setCustomLimit] = useState('');
+    const [inputFocused, setInputFocused] = useState(false);
 
     const handleLimitSelect = (limit: number) => {
         setSelectedLimit(limit);
@@ -18,38 +24,50 @@ const SpendingLimitScreen = () => {
 
     const handleCustomLimit = (text: string) => {
         setCustomLimit(text);
-        setSelectedLimit(Number(text));
+        const num = parseInt(text.replace(/[^0-9]/g, ''), 10);
+        if (!isNaN(num)) setSelectedLimit(num);
+    };
+
+    const handleBack = () => {
+        if (cardId) dispatch(disableSpendingLimit(cardId));
+        navigation.goBack();
     };
 
     const handleSave = () => {
-        // Save logic here (e.g., update context or redux)
+        if (selectedLimit > 0 && onLimitSet) {
+            onLimitSet(selectedLimit);
+        }
         navigation.goBack();
     };
 
     return (
-        <View style={styles.container}>
+        <View style={styles.root}>
             {/* Header */}
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <MaterialIcons name="arrow-back-ios" size={24} color="#222" />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Spending limit</Text>
-                <View style={{ width: 24 }} />
+            <View style={styles.headerBg}>
+                <View style={styles.headerRow}>
+                    <TouchableOpacity onPress={handleBack} style={styles.headerIconBtn}>
+                        <MaterialIcons name="arrow-back-ios" size={24} color="#fff" />
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle}>Spending limit</Text>
+                    <View style={styles.headerIconBtn}>
+                        <MaterialIcons name="arrow-upward" size={28} color="#01D167" />
+                    </View>
+                </View>
             </View>
 
             {/* Card */}
             <View style={styles.card}>
-                <View style={styles.row}>
+                <View style={styles.cardRow}>
                     <MaterialIcons name="speed" size={20} color="#01D167" style={{ marginRight: 8 }} />
-                    <Text style={styles.cardTitle}>Set a weekly debit card spending limit</Text>
+                    <Text style={styles.cardLabel}>Set a weekly debit card spending limit</Text>
                 </View>
-                <View style={styles.limitRow}>
+                <View style={styles.amountRow}>
                     <View style={styles.currencyBox}>
                         <Text style={styles.currencyText}>S$</Text>
                     </View>
-                    <Text style={styles.limitText}>{selectedLimit.toLocaleString()}</Text>
+                    <Text style={styles.amountText}>{selectedLimit.toLocaleString()}</Text>
                 </View>
-                <Text style={styles.cardSubtitle}>Here weekly means the last 7 days - not the calendar week</Text>
+                <Text style={styles.infoText}>Here weekly means the last 7 days - not the calendar week</Text>
             </View>
 
             {/* Preset Buttons */}
@@ -57,48 +75,77 @@ const SpendingLimitScreen = () => {
                 {LIMITS.map(limit => (
                     <TouchableOpacity
                         key={limit}
-                        style={[styles.presetButton, selectedLimit === limit && styles.presetButtonSelected]}
+                        style={[styles.presetBtn, selectedLimit === limit && !inputFocused && styles.presetBtnSelected]}
                         onPress={() => handleLimitSelect(limit)}
+                        activeOpacity={0.85}
                     >
-                        <Text style={[styles.presetButtonText, selectedLimit === limit && styles.presetButtonTextSelected]}>S$ {limit.toLocaleString()}</Text>
+                        <Text style={[styles.presetBtnText, selectedLimit === limit && !inputFocused && styles.presetBtnTextSelected]}>S$ {limit.toLocaleString()}</Text>
                     </TouchableOpacity>
                 ))}
             </View>
 
+            {/* Custom Input */}
+            <View style={styles.customInputRow}>
+                <TextInput
+                    style={styles.customInput}
+                    placeholder="Custom amount"
+                    keyboardType="numeric"
+                    value={customLimit}
+                    onChangeText={handleCustomLimit}
+                    onFocus={() => setInputFocused(true)}
+                    onBlur={() => setInputFocused(false)}
+                    maxLength={8}
+                />
+            </View>
+
             {/* Save Button */}
-            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                <Text style={styles.saveButtonText}>Save</Text>
+            <View style={{ flex: 1 }} />
+            <TouchableOpacity style={styles.saveBtn} onPress={handleSave} activeOpacity={0.85}>
+                <Text style={styles.saveBtnText}>Save</Text>
             </TouchableOpacity>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    root: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#F6F7FB',
     },
-    header: {
+    headerBg: {
+        backgroundColor: '#003366',
+        borderBottomLeftRadius: 24,
+        borderBottomRightRadius: 24,
+        paddingBottom: 32,
+        paddingTop: 0,
+    },
+    headerRow: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: 24,
-        paddingTop: 32,
-        paddingBottom: 16,
-        backgroundColor: '#003366',
-        borderBottomLeftRadius: 24,
-        borderBottomRightRadius: 24,
+        paddingTop: 48,
+        paddingBottom: 0,
+    },
+    headerIconBtn: {
+        width: 32,
+        height: 32,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     headerTitle: {
         color: '#fff',
         fontSize: 24,
         fontWeight: '700',
+        textAlign: 'center',
+        flex: 1,
     },
     card: {
         backgroundColor: '#fff',
-        margin: 24,
+        marginHorizontal: 0,
         marginTop: -32,
-        borderRadius: 20,
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
         padding: 24,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -106,17 +153,17 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
         elevation: 2,
     },
-    row: {
+    cardRow: {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 16,
     },
-    cardTitle: {
+    cardLabel: {
         fontSize: 16,
         color: '#222',
         fontWeight: '500',
     },
-    limitRow: {
+    amountRow: {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 8,
@@ -124,66 +171,86 @@ const styles = StyleSheet.create({
     currencyBox: {
         backgroundColor: '#01D167',
         borderRadius: 4,
-        paddingHorizontal: 8,
-        paddingVertical: 4,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
         marginRight: 8,
+        minWidth: 40,
+        alignItems: 'center',
     },
     currencyText: {
         color: '#fff',
         fontWeight: '700',
-        fontSize: 16,
+        fontSize: 18,
     },
-    limitText: {
-        fontSize: 32,
+    amountText: {
+        fontSize: 36,
         fontWeight: '700',
         color: '#222',
+        letterSpacing: 1,
     },
-    cardSubtitle: {
+    infoText: {
         color: '#888',
         fontSize: 13,
-        marginTop: 8,
+        marginTop: 12,
     },
     presetRow: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
-        marginTop: 24,
-        marginBottom: 32,
+        justifyContent: 'space-between',
+        marginTop: 32,
+        marginHorizontal: 16,
+        marginBottom: 0,
     },
-    presetButton: {
+    presetBtn: {
         backgroundColor: '#F6F7FB',
-        borderRadius: 8,
-        paddingVertical: 16,
-        paddingHorizontal: 20,
-        minWidth: width / 4,
+        borderRadius: 12,
+        paddingVertical: 18,
+        paddingHorizontal: 18,
+        minWidth: width / 4.2,
         alignItems: 'center',
-    },
-    presetButtonSelected: {
-        backgroundColor: '#E5FFF6',
         borderWidth: 1,
+        borderColor: 'transparent',
+    },
+    presetBtnSelected: {
+        backgroundColor: '#E5FFF6',
         borderColor: '#01D167',
     },
-    presetButtonText: {
+    presetBtnText: {
         color: '#01D167',
         fontWeight: '600',
         fontSize: 16,
     },
-    presetButtonTextSelected: {
+    presetBtnTextSelected: {
         color: '#01D167',
         fontWeight: '700',
     },
-    saveButton: {
+    saveBtn: {
         backgroundColor: '#01D167',
         borderRadius: 28,
         marginHorizontal: 24,
         paddingVertical: 18,
         alignItems: 'center',
-        marginTop: 'auto',
         marginBottom: 32,
+        marginTop: 32,
     },
-    saveButtonText: {
+    saveBtnText: {
         color: '#fff',
         fontSize: 18,
         fontWeight: '700',
+    },
+    customInputRow: {
+        marginTop: 28,
+        marginHorizontal: 24,
+    },
+    customInput: {
+        backgroundColor: '#F6F7FB',
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#E5E5E5',
+        paddingVertical: 16,
+        paddingHorizontal: 18,
+        fontSize: 16,
+        color: '#222',
+        fontWeight: '600',
     },
 });
 

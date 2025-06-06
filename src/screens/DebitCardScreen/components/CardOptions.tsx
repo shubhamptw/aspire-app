@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Switch } from 'react-native';
 import { styles } from '../styles';
 import { Card as CardType } from '../../../types/card';
 
@@ -11,6 +11,8 @@ interface CardOptionsProps {
     currentCardIndex: number;
     onCardSelect: (index: number) => void;
     onWeeklyLimitPress: () => void;
+    weeklyLimitEnabled: boolean;
+    onWeeklyLimitToggle: (value: boolean) => void;
 }
 
 export const CardOptions = ({
@@ -21,6 +23,8 @@ export const CardOptions = ({
     currentCardIndex,
     onCardSelect,
     onWeeklyLimitPress,
+    weeklyLimitEnabled,
+    onWeeklyLimitToggle,
 }: CardOptionsProps) => {
     const options = [
         {
@@ -32,9 +36,10 @@ export const CardOptions = ({
             title: 'Weekly spending limit',
             subtitle: 'Your weekly spending limit is S$ 5,000',
             icon: require('../../../assets/transfer_2.png'),
-            toggle: true,
-            value: false,
-            onToggle: onWeeklyLimitPress,
+            switch: true,
+            value: weeklyLimitEnabled,
+            onPress: onWeeklyLimitPress,
+            onToggle: onWeeklyLimitToggle,
         },
         {
             title: 'Freeze card',
@@ -64,6 +69,7 @@ export const CardOptions = ({
                     key={index}
                     style={styles.optionRow}
                     onPress={option.onPress}
+                    activeOpacity={option.onPress ? 0.7 : 1}
                 >
                     <View style={styles.optionIcon}>
                         <Image source={option.icon} style={{ width: 32, height: 32 }} />
@@ -72,7 +78,15 @@ export const CardOptions = ({
                         <Text style={styles.optionTitle}>{option.title}</Text>
                         <Text style={styles.optionSubtitle}>{option.subtitle}</Text>
                     </View>
-                    {option.toggle && (
+                    {option.switch && (
+                        <Switch
+                            value={option.value}
+                            onValueChange={option.onToggle}
+                            thumbColor={option.value ? '#fff' : '#f4f3f4'}
+                            trackColor={{ false: '#EEEEEE', true: '#01D167' }}
+                        />
+                    )}
+                    {option.toggle && !option.switch && (
                         <TouchableOpacity
                             style={[
                                 styles.toggleButton,
