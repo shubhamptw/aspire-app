@@ -106,14 +106,15 @@ export const styles = StyleSheet.create({
     },
     presetBtn: {
         backgroundColor: '#E5FFF6',
-        borderRadius: 12,
-        paddingVertical: 18,
-        paddingHorizontal: 18,
-        // minWidth: width / 4.2,
+        borderRadius: 16,
+        paddingVertical: 12,
+        paddingHorizontal: 12,
+        // flex: 1,
         alignItems: 'center',
         borderWidth: 1,
         borderColor: 'transparent',
         marginHorizontal: 4,
+        minWidth: 0,
     },
     presetBtnSelected: {
         backgroundColor: '#E5FFF6',
@@ -127,11 +128,9 @@ export const styles = StyleSheet.create({
     },
     saveBtn: {
         backgroundColor: '#01D167',
-        borderRadius: 28,
-        marginHorizontal: 24,
-        paddingVertical: 18,
+        borderRadius: 16,
+        paddingVertical: 16,
         alignItems: 'center',
-        marginBottom: 32,
         marginTop: 32,
     },
     smallLogo: {

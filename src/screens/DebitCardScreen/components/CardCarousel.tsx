@@ -63,7 +63,7 @@ export const CardCarousel = ({
                 renderItem={renderItem}
                 keyExtractor={(item) => item.key}
                 horizontal
-                showsHorizontalScrollIndicator={true}
+                showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.listContent}
                 snapToInterval={CARD_WIDTH + CARD_SPACING}
                 decelerationRate="fast"
