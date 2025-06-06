@@ -82,7 +82,7 @@ export const CardOptions = ({
                         <Switch
                             value={option.value}
                             onValueChange={option.onToggle}
-                            thumbColor={option.value ? '#fff' : '#f4f3f4'}
+                            thumbColor={option.value ? '#fff' : '#fff'}
                             trackColor={{ false: '#EEEEEE', true: '#01D167' }}
                         />
                     )}

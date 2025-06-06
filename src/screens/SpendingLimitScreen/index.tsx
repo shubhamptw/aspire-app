@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, TextInput, SafeAreaView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch } from 'react-redux';
@@ -14,18 +14,18 @@ const SpendingLimitScreen = () => {
     const route = useRoute();
     const { cardId, onLimitSet } = route.params || {};
     const [selectedLimit, setSelectedLimit] = useState(LIMITS[0]);
-    const [customLimit, setCustomLimit] = useState('');
-    const [inputFocused, setInputFocused] = useState(false);
+    const [amount, setAmount] = useState(String(LIMITS[0]));
 
     const handleLimitSelect = (limit: number) => {
         setSelectedLimit(limit);
-        setCustomLimit('');
+        setAmount(String(limit));
     };
 
-    const handleCustomLimit = (text: string) => {
-        setCustomLimit(text);
-        const num = parseInt(text.replace(/[^0-9]/g, ''), 10);
-        if (!isNaN(num)) setSelectedLimit(num);
+    const handleAmountChange = (text: string) => {
+        // Only allow numbers
+        const num = text.replace(/[^0-9]/g, '');
+        setAmount(num);
+        if (num) setSelectedLimit(Number(num));
     };
 
     const handleBack = () => {
@@ -34,98 +34,87 @@ const SpendingLimitScreen = () => {
     };
 
     const handleSave = () => {
-        if (selectedLimit > 0 && onLimitSet) {
-            onLimitSet(selectedLimit);
+        const limit = parseInt(amount, 10);
+        if (limit > 0 && onLimitSet) {
+            onLimitSet(limit);
         }
         navigation.goBack();
     };
 
     return (
-        <View style={styles.root}>
+        <SafeAreaView style={styles.root}>
             {/* Header */}
             <View style={styles.headerBg}>
                 <View style={styles.headerRow}>
                     <TouchableOpacity onPress={handleBack} style={styles.headerIconBtn}>
                         <MaterialIcons name="arrow-back-ios" size={24} color="#fff" />
                     </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Spending limit</Text>
                     <View style={styles.headerIconBtn}>
                         <MaterialIcons name="arrow-upward" size={28} color="#01D167" />
                     </View>
                 </View>
+                <Text style={styles.headerTitle}>Spending limit</Text>
             </View>
 
             {/* Card */}
             <View style={styles.card}>
-                <View style={styles.cardRow}>
-                    <MaterialIcons name="speed" size={20} color="#01D167" style={{ marginRight: 8 }} />
-                    <Text style={styles.cardLabel}>Set a weekly debit card spending limit</Text>
-                </View>
-                <View style={styles.amountRow}>
-                    <View style={styles.currencyBox}>
-                        <Text style={styles.currencyText}>S$</Text>
+                <View>
+                    <View style={styles.cardRow}>
+                        <MaterialIcons name="speed" size={20} color="#01D167" style={{ marginRight: 8 }} />
+                        <Text style={styles.cardLabel}>Set a weekly debit card spending limit</Text>
                     </View>
-                    <Text style={styles.amountText}>{selectedLimit.toLocaleString()}</Text>
+                    <View style={styles.amountRow}>
+                        <View style={styles.currencyBox}>
+                            <Text style={styles.currencyText}>S$</Text>
+                        </View>
+                        <TextInput
+                            style={styles.amountInput}
+                            value={amount.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                            onChangeText={handleAmountChange}
+                            keyboardType="numeric"
+                            maxLength={8}
+                            placeholder="0"
+                            placeholderTextColor="#888"
+                        />
+                    </View>
+                    <Text style={styles.infoText}>Here weekly means the last 7 days - not the calendar week</Text>
+
+                    {/* Preset Buttons (inside card) */}
+                    <View style={styles.presetRowInCard}>
+                        {LIMITS.map(limit => (
+                            <TouchableOpacity
+                                key={limit}
+                                style={[styles.presetBtn, Number(amount) === limit && styles.presetBtnSelected]}
+                                onPress={() => handleLimitSelect(limit)}
+                                activeOpacity={0.85}
+                            >
+                                <Text style={[styles.presetBtnText, Number(amount) === limit && styles.presetBtnTextSelected]}>S$ {limit.toLocaleString()}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
                 </View>
-                <Text style={styles.infoText}>Here weekly means the last 7 days - not the calendar week</Text>
+                <TouchableOpacity style={styles.saveBtn} onPress={handleSave} activeOpacity={0.85}>
+                    <Text style={styles.saveBtnText}>Save</Text>
+                </TouchableOpacity>
             </View>
 
-            {/* Preset Buttons */}
-            <View style={styles.presetRow}>
-                {LIMITS.map(limit => (
-                    <TouchableOpacity
-                        key={limit}
-                        style={[styles.presetBtn, selectedLimit === limit && !inputFocused && styles.presetBtnSelected]}
-                        onPress={() => handleLimitSelect(limit)}
-                        activeOpacity={0.85}
-                    >
-                        <Text style={[styles.presetBtnText, selectedLimit === limit && !inputFocused && styles.presetBtnTextSelected]}>S$ {limit.toLocaleString()}</Text>
-                    </TouchableOpacity>
-                ))}
-            </View>
 
-            {/* Custom Input */}
-            <View style={styles.customInputRow}>
-                <TextInput
-                    style={styles.customInput}
-                    placeholder="Custom amount"
-                    keyboardType="numeric"
-                    value={customLimit}
-                    onChangeText={handleCustomLimit}
-                    onFocus={() => setInputFocused(true)}
-                    onBlur={() => setInputFocused(false)}
-                    maxLength={8}
-                />
-            </View>
-
-            {/* Save Button */}
-            <View style={{ flex: 1 }} />
-            <TouchableOpacity style={styles.saveBtn} onPress={handleSave} activeOpacity={0.85}>
-                <Text style={styles.saveBtnText}>Save</Text>
-            </TouchableOpacity>
-        </View>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
     root: {
         flex: 1,
-        backgroundColor: '#F6F7FB',
+        backgroundColor: '#003366',
     },
     headerBg: {
-        backgroundColor: '#003366',
-        borderBottomLeftRadius: 24,
-        borderBottomRightRadius: 24,
-        paddingBottom: 32,
-        paddingTop: 0,
     },
     headerRow: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 24,
-        paddingTop: 48,
-        paddingBottom: 0,
+        paddingHorizontal: 16,
     },
     headerIconBtn: {
         width: 32,
@@ -143,15 +132,12 @@ const styles = StyleSheet.create({
     card: {
         backgroundColor: '#fff',
         marginHorizontal: 0,
-        marginTop: -32,
+        marginTop: 64,
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
         padding: 24,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.08,
-        shadowRadius: 8,
-        elevation: 2,
+        flex: 1,
+        justifyContent: 'space-between'
     },
     cardRow: {
         flexDirection: 'row',
@@ -182,26 +168,31 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         fontSize: 18,
     },
-    amountText: {
+    amountInput: {
         fontSize: 36,
         fontWeight: '700',
         color: '#222',
         letterSpacing: 1,
+        flex: 1,
+        padding: 0,
+        margin: 0,
+        backgroundColor: 'transparent',
+        borderWidth: 0,
     },
     infoText: {
         color: '#888',
         fontSize: 13,
         marginTop: 12,
     },
-    presetRow: {
+    presetRowInCard: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginTop: 32,
-        marginHorizontal: 16,
         marginBottom: 0,
+        padding: 0,
     },
     presetBtn: {
-        backgroundColor: '#F6F7FB',
+        backgroundColor: '#E5FFF6',
         borderRadius: 12,
         paddingVertical: 18,
         paddingHorizontal: 18,
@@ -209,6 +200,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderWidth: 1,
         borderColor: 'transparent',
+        marginHorizontal: 4,
     },
     presetBtnSelected: {
         backgroundColor: '#E5FFF6',
@@ -223,6 +215,12 @@ const styles = StyleSheet.create({
         color: '#01D167',
         fontWeight: '700',
     },
+    saveArea: {
+        backgroundColor: '#fff',
+        paddingTop: 16,
+        paddingBottom: 32,
+        paddingHorizontal: 24,
+    },
     saveBtn: {
         backgroundColor: '#01D167',
         borderRadius: 28,
@@ -236,21 +234,6 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 18,
         fontWeight: '700',
-    },
-    customInputRow: {
-        marginTop: 28,
-        marginHorizontal: 24,
-    },
-    customInput: {
-        backgroundColor: '#F6F7FB',
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#E5E5E5',
-        paddingVertical: 16,
-        paddingHorizontal: 18,
-        fontSize: 16,
-        color: '#222',
-        fontWeight: '600',
     },
 });
 
