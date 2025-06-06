@@ -96,12 +96,6 @@ const DebitCardScreen = () => {
     };
 
     const currentCard = cards[currentCardIndex];
-    // Always call useSelector before any return
-    const cardLimitState = useSelector((state: RootState) =>
-        currentCard ? state.spendingLimit.cardLimits[currentCard.id] || { limit: null, enabled: false } : { limit: null, enabled: false }
-    );
-    const spendingLimit = cardLimitState.limit;
-    const spendingLimitEnabled = cardLimitState.enabled;
     if (!currentCard) {
         return null;
     }

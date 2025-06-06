@@ -1,7 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import spendingLimitReducer from './spendingLimit/reducer';
 import cardsReducer from './cardsSlice';
 
 const persistConfig = {
@@ -11,13 +10,11 @@ const persistConfig = {
 };
 
 const rootReducer = {
-    spendingLimit: spendingLimitReducer,
     cards: cardsReducer,
 };
 
 const persistedReducer = persistReducer(persistConfig, (state, action) => {
     return {
-        spendingLimit: rootReducer.spendingLimit(state?.spendingLimit, action),
         cards: rootReducer.cards(state?.cards, action),
     };
 });
