@@ -55,7 +55,7 @@ export const styles = StyleSheet.create({
         backgroundColor: '#003366',
     },
     headerBg: {
-        paddingHorizontal: 16,
+        margin: 16,
     },
     headerRow: {
         flexDirection: 'row',
