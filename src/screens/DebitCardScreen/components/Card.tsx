@@ -15,6 +15,20 @@ export const Card = ({ showCardNumber, onToggleCardNumber, card, onLongPress }: 
     return (
         <View style={styles.cardContainer}>
             <TouchableOpacity
+                onPress={onToggleCardNumber}
+                style={styles.toggleCardButton}
+            >
+                <MaterialIcons
+                    name={showCardNumber ? 'visibility-off' : 'visibility'}
+                    size={20}
+                    color="#01D167"
+                    style={styles.visibilityIcon}
+                />
+                <Text style={styles.toggleCardText}>
+                    {showCardNumber ? 'Hide card number' : 'Show card number'}
+                </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
                 activeOpacity={1}
                 style={styles.card2}
                 onLongPress={onLongPress}
@@ -38,20 +52,7 @@ export const Card = ({ showCardNumber, onToggleCardNumber, card, onLongPress }: 
                     resizeMode="contain"
                 />
             </TouchableOpacity>
-            <TouchableOpacity
-                onPress={onToggleCardNumber}
-                style={styles.toggleCardButton}
-            >
-                <MaterialIcons
-                    name={showCardNumber ? 'visibility-off' : 'visibility'}
-                    size={20}
-                    color="#01D167"
-                    style={styles.visibilityIcon}
-                />
-                <Text style={styles.toggleCardText}>
-                    {showCardNumber ? 'Hide card number' : 'Show card number'}
-                </Text>
-            </TouchableOpacity>
+
         </View>
     );
 }; 
