@@ -146,7 +146,7 @@ const DebitCardScreen = () => {
                     overflow: 'visible',
                     zIndex: 1,
                 }}>
-                    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 16, paddingTop: CAROUSEL_OVERLAP, paddingBottom: 200 }}>
+                    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 16, paddingTop: CAROUSEL_OVERLAP }}>
                         {currentCard.weeklyLimitEnabled && currentCard.weeklyLimit && (
                             <SpendingLimit limit={currentCard.weeklyLimit} spent={spent} />
                         )}

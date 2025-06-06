@@ -162,8 +162,6 @@ export const styles = StyleSheet.create({
     },
     sheetContent: {
         paddingHorizontal: 16,
-        marginTop: 170,
-        marginBottom: 200,
     },
     card: {
         position: 'absolute',
