@@ -2,6 +2,11 @@
 
 A React Native application for managing debit cards with features like card management, spending limits, and card freezing.
 
+Android app:  
+https://drive.google.com/drive/folders/1cVTp9W3M2_RgkrNYkWUveU5uB7WZE_0j?usp=sharing 
+
+Ios app can be generated from repo. 
+
 <div style="display: flex; justify-content: space-between; margin: 20px 0;">
   <img src="docs/images/card-management.png" alt="Card Management" width="30%" />
   <img src="docs/images/set-spending-limit.png" alt="Set Spending Limit" width="30%" />
